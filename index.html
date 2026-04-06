@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marvelous Inventions — 3D Printed Lamps</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blush: #fceae8; --blush2: #f9dbd8; --white: #ffffff;
+    --black: #111111; --mid: #555555; --light: #999999;
+    --border: #e8d8d6; --accent: #c0524a; --radius: 14px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--white); color: var(--black); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 0.6rem; }
+  .logo-text { font-size: 1rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--black); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { color: var(--light); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--black); }
+
+  .hero { min-height: 100vh; display: flex; align-items: center; background: var(--blush); padding: 8rem 3rem 4rem; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .hero-tag { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; display: block; }
+  .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .hero h1 .thin { font-weight: 300; }
+  .hero p { font-size: 1rem; color: var(--mid); max-width: 420px; margin-bottom: 2rem; font-weight: 300; }
+  .btn { display: inline-block; padding: 0.85rem 2rem; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; border: none; border-radius: 4px; }
+  .btn-dark { background: var(--black); color: var(--white); }
+  .btn-dark:hover { background: #333; transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--black); margin-left: 0.8rem; }
+  .btn-outline:hover { background: var(--black); color: var(--white); }
+  .hero-visual { display: flex; align-items: center; justify-content: center; background: var(--blush2); border-radius: var(--radius); height: 420px; border: 1px solid var(--border); overflow: hidden; }
+
+  section { padding: 6rem 3rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+  .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .section-title .thin { font-weight: 300; }
+  .section-sub { color: var(--mid); font-size: 0.95rem; font-weight: 300; margin-bottom: 3rem; }
+  .centered { text-align: center; }
+
+  #gallery { background: var(--white); }
+  .lamp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .lamp-card { border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; background: var(--white); }
+  .lamp-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.08); }
+  .lamp-card.has-img { position: relative; min-height: 750px; border: none; }
+  .lamp-card.has-img .card-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; z-index: 0; }
+  .lamp-card.has-img:hover .card-bg-img { transform: scale(1.04); }
+  .lamp-card.has-img .lamp-info { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); padding: 1.1rem 1.4rem 1.2rem; z-index: 1; border-top: 1.5px solid var(--border); }
+  .lamp-img { height: 420px; display: flex; align-items: center; justify-content: center; font-size: 5rem; background: var(--blush); overflow: hidden; }
+  .lamp-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+  .lamp-card:hover .lamp-img img { transform: scale(1.05); }
+  .lamp-info { padding: 1.4rem; }
+  .lamp-badge { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+  .lamp-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .lamp-desc { color: var(--mid); font-size: 0.85rem; font-weight: 300; margin-bottom: 0.8rem; }
+  .lamp-price { font-size: 1rem; font-weight: 800; color: var(--black); }
+
+  #details { background: var(--blush); }
+  .lamp-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; padding: 4rem 0; border-bottom: 1px solid var(--border); }
+  .lamp-detail:last-child { border-bottom: none; }
+  .lamp-detail.reverse .detail-visual { order: 2; }
+  .lamp-detail.reverse .detail-text { order: 1; }
+  .detail-visual { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); height: 650px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .detail-visual > img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); opacity: 0; transition: opacity 0.35s ease; position: absolute; top: 0; left: 0; }
+  .detail-visual > img.visible { opacity: 1; }
+  .detail-visual .fallback { font-size: 7rem; transition: opacity 0.35s ease; }
+  .detail-visual .fallback.hidden { opacity: 0; }
+  .color-name-tag { position: absolute; bottom: 0.8rem; left: 50%; transform: translateX(-50%); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); background: rgba(255,255,255,0.9); padding: 0.2rem 0.8rem; border-radius: 999px; white-space: nowrap; border: 1px solid var(--border); z-index: 5; }
+
+  .slideshow { position: relative; width: 100%; height: 100%; border-radius: var(--radius); overflow: hidden; }
+  .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease; border-radius: var(--radius); }
+  .slide.active { opacity: 1; }
+  .slide-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: var(--blush); z-index: 0; }
+  .slide-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.95); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: background 0.2s, border-color 0.2s; font-size: 1rem; color: var(--black); user-select: none; }
+  .slide-arrow:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+  .slide-arrow.prev { left: 0.7rem; }
+  .slide-arrow.next { right: 0.7rem; }
+  .slide-dots { position: absolute; bottom: 0.7rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.4rem; z-index: 20; }
+  .slide-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(0,0,0,0.2); cursor: pointer; transition: background 0.2s; }
+  .slide-dot.active { background: var(--black); }
+  .slide-counter { position: absolute; top: 0.7rem; right: 0.8rem; font-size: 0.68rem; letter-spacing: 0.1em; background: rgba(255,255,255,0.88); color: var(--mid); padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); z-index: 20; }
+
+  .detail-text .badge { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.5rem; }
+  .detail-text h3 { font-size: 2rem; font-weight: 800; margin-bottom: 0.2rem; letter-spacing: -0.02em; }
+  .detail-text .price-tag { font-size: 1.3rem; font-weight: 800; color: var(--black); margin-bottom: 1rem; display: block; }
+  .detail-text p { color: var(--mid); font-size: 0.9rem; font-weight: 300; margin-bottom: 1.2rem; }
+  .feature-list { list-style: none; margin-bottom: 1.5rem; }
+  .feature-list li { padding: 0.35rem 0; font-size: 0.88rem; color: var(--mid); display: flex; gap: 0.6rem; font-weight: 300; }
+  .feature-list li::before { content: '—'; color: var(--accent); font-weight: 700; }
+
+  .size-selector { display: flex; gap: 0.7rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .size-btn { flex: 1; min-width: 90px; padding: 0.7rem 0.5rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); cursor: pointer; text-align: center; transition: all 0.2s; font-family: inherit; }
+  .size-btn:hover { border-color: var(--black); }
+  .size-btn.active { border-color: var(--black); background: var(--black); color: var(--white); }
+  .size-btn .size-name { font-size: 0.85rem; font-weight: 700; display: block; }
+  .size-btn .size-dim { font-size: 0.68rem; color: var(--light); display: block; margin-top: 0.15rem; }
+  .size-btn.active .size-dim { color: #aaa; }
+  .size-btn .size-price { font-size: 0.9rem; font-weight: 800; display: block; margin-top: 0.3rem; color: var(--black); }
+  .size-btn.active .size-price { color: var(--white); }
+  .memory-price-display { font-size: 1.3rem; font-weight: 800; color: var(--black); margin-bottom: 1rem; display: block; }
+
+  .colour-section { margin-bottom: 1.5rem; }
+  .colour-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--black); margin-bottom: 0.6rem; }
+  .swatch-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .swatch { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid transparent; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; }
+  .swatch:hover { transform: scale(1.2); }
+  .swatch.active { border-color: var(--black); transform: scale(1.15); }
+  .swatch[title]:hover::after { content: attr(title); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: var(--black); color: var(--white); font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap; pointer-events: none; }
+  .swatch-label { font-size: 0.8rem; color: var(--mid); font-weight: 600; margin-left: 0.3rem; }
+
+  .combo-display { display: flex; align-items: center; gap: 1rem; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.8rem 1.1rem; margin-bottom: 1.5rem; width: fit-content; }
+  .combo-part { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+  .combo-swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); }
+  .combo-part-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--light); }
+  .combo-part-name { font-size: 0.75rem; font-weight: 700; color: var(--black); }
+  .combo-divider { font-size: 1.2rem; color: var(--border); }
+
+  #order { background: var(--white); }
+  .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .order-intro h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.1; }
+  .order-intro .thin { font-weight: 300; }
+  .order-intro p { color: var(--mid); font-size: 0.92rem; font-weight: 300; margin-bottom: 1.5rem; }
+  .order-detail { font-size: 0.82rem; color: var(--light); display: flex; flex-direction: column; gap: 0.5rem; }
+  .order-detail span { display: flex; align-items: center; gap: 0.5rem; }
+  .form-group { margin-bottom: 1.1rem; }
+  label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--black); margin-bottom: 0.4rem; }
+  input, select, textarea { width: 100%; background: var(--blush); border: 1.5px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; color: var(--black); font-family: inherit; font-size: 0.9rem; font-weight: 300; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--black); background: var(--white); }
+  textarea { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .submit-btn { width: 100%; padding: 1rem; background: var(--black); color: var(--white); border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+  .submit-btn:hover { background: #333; }
+  .success-msg { display: none; text-align: center; padding: 1.2rem; font-size: 0.9rem; color: var(--accent); font-weight: 700; }
+
+  footer { background: var(--black); color: var(--white); padding: 3rem; text-align: center; }
+  .footer-logo { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .footer-sub { font-size: 0.75rem; color: #666; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .footer-links { display: flex; justify-content: center; gap: 2rem; list-style: none; margin-bottom: 1.5rem; }
+  .footer-links a { color: #666; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--white); }
+  .footer-email { color: #888; font-size: 0.82rem; margin-bottom: 1.5rem; }
+  .footer-email a { color: var(--blush2); text-decoration: none; }
+  .copyright { color: #444; font-size: 0.72rem; }
+
+  @media (max-width: 750px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { gap: 1.2rem; }
+    .hero-inner, .lamp-detail, .order-grid { grid-template-columns: 1fr; }
+    .lamp-grid { grid-template-columns: 1fr; }
+    .lamp-detail.reverse .detail-visual, .lamp-detail.reverse .detail-text { order: unset; }
+    .hero-visual { height: 260px; }
+    .form-row { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-wrap">
+    <img src="logo.png" style="height:40px;">
+    <span class="logo-text">Marvelous Inventions</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#gallery">Collection</a></li>
+    <li><a href="#details">Details</a></li>
+    <li><a href="#order">Order</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-tag">Let's Build It!</span>
+      <h1>Light,<br><span class="thin">Reimagined</span><br>in 3D.</h1>
+      <p>Precision-printed lamps that bring sculptural beauty to any space. Made to order, built to last.</p>
+      <a href="#gallery" class="btn btn-dark">Explore Collection</a>
+      <a href="#order" class="btn btn-outline">Order Now</a>
+    </div>
+    <div class="hero-visual">
+      <img src="logo.png" style="height:200px;">
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="container">
+    <div class="centered">
+      <span class="section-label">Our Collection</span>
+      <h2 class="section-title">Three <span class="thin">Distinct</span> Designs</h2>
+      <p class="section-sub">Each lamp is printed on demand in your choice of colour and finish.</p>
+    </div>
+    <div class="lamp-grid">
+      <div class="lamp-card has-img" onclick="document.getElementById('memory').scrollIntoView({behavior:'smooth'})">
+        <img class="card-bg-img" src="MemoryLampDefault.png" alt="Memory Lamp">
+        <div class="lamp-info">
+          <span class="lamp-badge">Bestseller</span>
+          <div class="lamp-name">Memory Lamp</div>
+          <div class="lamp-desc">Your most treasured memories etched onto a lampshade, illuminated with a warm glow.</div>
+          <div class="lamp-price">From $38</div>
+        </div>
+      </div>
+      <div class="lamp-card has-img" onclick="document.getElementById('swirl').scrollIntoView({behavior:'smooth'})">
+        <img class="card-bg-img" src="SwirlLampDefault.png" alt="Swirl Lamp">
+        <div class="lamp-info">
+          <span class="lamp-badge">New Arrival</span>
+          <div class="lamp-name">Swirl Table Lamp</div>
+          <div class="lamp-desc">A spiraling form producing a warm light that makes any room cozy.</div>
+          <div class="lamp-price">From $30</div>
+        </div>
+      </div>
+      <div class="lamp-card has-img" onclick="document.getElementById('smart').scrollIntoView({behavior:'smooth'})">
+        <img class="card-bg-img" src="SmartLampDefault.png" alt="Smart Lamp">
+        <div class="lamp-info">
+          <span class="lamp-badge">Limited Edition</span>
+          <div class="lamp-name">Smart Lamp</div>
+          <div class="lamp-desc">WiFi-connected RGB lamp with a glow-in-the-dark translucent shade.</div>
+          <div class="lamp-price">From $35</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="details">
+  <div class="container">
+
+    <!-- MEMORY LAMP -->
+    <div class="lamp-detail" id="memory">
+      <div class="detail-visual" id="memory-visual">
+        <span class="fallback" id="memory-fallback"><img src="MemoryLampDefault.png"></span>
+        <img id="memory-img" src="" alt="Memory Lamp">
+        <span class="color-name-tag" id="memory-colorname">Choose a base colour →</span>
+      </div>
+      <div class="detail-text">
+        <span class="badge">Bestseller</span>
+        <h3>Memory Lamp</h3>
+        <div class="size-selector">
+          <button class="size-btn active" onclick="selectSize('small', this)">
+            <span class="size-name">Small</span>
+            <span class="size-dim">140mm × 155mm</span>
+            <span class="size-price">$38</span>
+          </button>
+          <button class="size-btn" onclick="selectSize('medium', this)">
+            <span class="size-name">Medium</span>
+            <span class="size-dim">196mm × 217mm</span>
+            <span class="size-price">$75</span>
+          </button>
+          <button class="size-btn" onclick="selectSize('large', this)">
+            <span class="size-name">Large</span>
+            <span class="size-dim">224mm × 248mm</span>
+            <span class="size-price">$120</span>
+          </button>
+        </div>
+        <span class="memory-price-display" id="memory-price">$38</span>
+        <p>Imagine your most treasured memories etched onto a lampshade and illuminated with a warm light. Choose your size — all include a white shade and your choice of base colour.</p>
+        <ul class="feature-list" id="memory-specs">
+          <li id="spec-shade">Shade: 140mm dia · 155mm tall · 125g</li>
+          <li id="spec-base">Base: 100mm dia · 140mm tall · 125g</li>
+          <li>White PLA+ shade, matte base finish</li>
+          <li>B22 socket, fits standard bulbs</li>
+          <li>Ships in 7–10 business days</li>
+        </ul>
+        <div class="colour-section">
+          <div class="colour-section-title">Lampshade — always White</div>
+          <div class="swatch-row">
+            <div class="swatch active" style="background:#ffffff;box-shadow:inset 0 0 0 1.5px #ccc;" title="White"></div>
+            <span class="swatch-label" style="color:var(--light);font-weight:400;">Fixed — White</span>
+          </div>
+        </div>
+        <div class="colour-section">
+          <div class="colour-section-title">Base — choose your colour</div>
+          <div class="swatch-row">
+            <div class="swatch" style="background:#888888;" title="Gray" onclick="switchColor('memory','memory-gray.jpg','White shade · Gray base',this)"></div>
+            <div class="swatch" style="background:#f5f0eb;box-shadow:inset 0 0 0 1.5px #ccc;" title="White" onclick="switchColor('memory','memory-white.jpg','White shade · White base',this)"></div>
+            <div class="swatch" style="background:#9b1c2e;" title="Ruby Red" onclick="switchColor('memory','memory-ruby.jpg','White shade · Ruby Red base',this)"></div>
+            <span class="swatch-label" id="memory-swatchlabel"></span>
+          </div>
+        </div>
+        <a href="#order" class="btn btn-dark">Order Memory</a>
+      </div>
+    </div>
+
+    <!-- SWIRL LAMP -->
+    <div class="lamp-detail reverse" id="swirl">
+      <div class="detail-visual" id="swirl-visual">
+        <div class="slideshow" id="swirl-slideshow">
+          <div class="slide-fallback" id="swirl-fallback">🔮</div>
+          <img class="slide active" src="swirl-1.jpg" alt="Swirl Lamp view 1" onerror="this.style.display='none'">
+          <img class="slide" src="swirl-2.jpg" alt="Swirl Lamp view 2" onerror="this.style.display='none'">
+          <img class="slide" src="swirl-3.jpg" alt="Swirl Lamp view 3" onerror="this.style.display='none'">
+          <button class="slide-arrow prev" onclick="moveSlide('swirl', -1)">&#8592;</button>
+          <button class="slide-arrow next" onclick="moveSlide('swirl', 1)">&#8594;</button>
+          <div class="slide-dots" id="swirl-dots"></div>
+          <div class="slide-counter" id="swirl-counter"></div>
+        </div>
+        <span class="color-name-tag">Orange shade · Black base</span>
+      </div>
+      <div class="detail-text">
+        <span class="badge">New Arrival</span>
+        <h3>Swirl Table Lamp</h3>
+        <span class="price-tag">From $30</span>
+        <p>A spiraling form producing a warm light that makes any room cozy. Comes in one bold, curated colour combination.</p>
+        <ul class="feature-list">
+          <li>PLA filament</li>
+          <li>B22 socket</li>
+          <li>25cm x 18cm</li>
+          <li>Ships in 10–14 business days</li>
+        </ul>
+        <div class="colour-section">
+          <div class="colour-section-title">Colour Combination</div>
+          <div class="combo-display">
+            <div class="combo-part">
+              <div class="combo-swatch" style="background:#e8620a;"></div>
+              <div class="combo-part-label">Shade</div>
+              <div class="combo-part-name">Orange</div>
+            </div>
+            <div class="combo-divider">+</div>
+            <div class="combo-part">
+              <div class="combo-swatch" style="background:#1a1a1a;"></div>
+              <div class="combo-part-label">Base</div>
+              <div class="combo-part-name">Black</div>
+            </div>
+          </div>
+        </div>
+        <a href="#order" class="btn btn-dark">Order Swirl</a>
+      </div>
+    </div>
+
+    <!-- SMART LAMP -->
+    <div class="lamp-detail" id="smart">
+      <div class="detail-visual" id="smart-visual">
+        <div class="slideshow" id="smart-slideshow">
+          <div class="slide-fallback" id="smart-fallback">💡</div>
+          <img class="slide active" src="smart-1.jpg" alt="Smart Lamp view 1" onerror="this.style.display='none'">
+          <img class="slide" src="smart-2.jpg" alt="Smart Lamp view 2" onerror="this.style.display='none'">
+          <img class="slide" src="smart-3.jpg" alt="Smart Lamp view 3" onerror="this.style.display='none'">
+          <button class="slide-arrow prev" onclick="moveSlide('smart', -1)">&#8592;</button>
+          <button class="slide-arrow next" onclick="moveSlide('smart', 1)">&#8594;</button>
+          <div class="slide-dots" id="smart-dots"></div>
+          <div class="slide-counter" id="smart-counter"></div>
+        </div>
+        <span class="color-name-tag">Frosty Translucent shade · Black base</span>
+      </div>
+      <div class="detail-text">
+        <span class="badge">Limited Edition</span>
+        <h3>Smart Lamp</h3>
+        <span class="price-tag">From $35</span>
+        <p>A lamp that connects to your WiFi with RGB capabilities you can control on your phone. The lampshade glows in the dark after the light is turned off.</p>
+        <ul class="feature-list">
+          <li>Translucent glow-in-the-dark PLA shade</li>
+          <li>B22 socket, compatible with most LED bulbs in Zimbabwe</li>
+          <li>Smart LED bulb included</li>
+          <li>18cm × 10cm</li>
+          <li>Ships in 7–10 business days</li>
+        </ul>
+        <div class="colour-section">
+          <div class="colour-section-title">Colour Combination</div>
+          <div class="combo-display">
+            <div class="combo-part">
+              <div class="combo-swatch" style="background:linear-gradient(135deg,#e8f4f8,#c5dde8);border:1.5px solid #b0ccd8;"></div>
+              <div class="combo-part-label">Shade</div>
+              <div class="combo-part-name">Frosty Translucent</div>
+            </div>
+            <div class="combo-divider">+</div>
+            <div class="combo-part">
+              <div class="combo-swatch" style="background:#1a1a1a;"></div>
+              <div class="combo-part-label">Base</div>
+              <div class="combo-part-name">Black</div>
+            </div>
+          </div>
+        </div>
+        <a href="#order" class="btn btn-dark">Order Smart</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="order">
+  <div class="container">
+    <div class="order-grid">
+      <div class="order-intro">
+        <span class="section-label">Order & Inquiries</span>
+        <h2><span class="thin">Made</span><br>Just for<br>You.</h2>
+        <p>Every lamp is printed to order. Fill out the form and we'll get back to you within 24 hours to confirm your order and answer any questions.</p>
+        <div class="order-detail">
+          <span>💡 Made to order — no inventory, no waste</span>
+          <span>📦 Ships in 7–14 business days</span>
+          <span>✉️ marvelousinventions@outlook.com</span>
+        </div>
+      </div>
+      <div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Jane" id="fname"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Smith" id="lname"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="jane@example.com" id="email"></div>
+        <div class="form-group">
+          <label>Select Lamp</label>
+          <select id="lamp">
+            <option value="">— Choose a lamp —</option>
+            <option>Memory Lamp — Small ($38)</option>
+            <option>Memory Lamp — Medium ($75)</option>
+            <option>Memory Lamp — Large ($120)</option>
+            <option>Swirl Table Lamp ($30)</option>
+            <option>Smart Lamp ($35)</option>
+            <option>Multiple / Custom inquiry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Memory Lamp Base Colour (if applicable)</label>
+          <select id="color">
+            <option value="">— Choose a base colour —</option>
+            <option>Gray base</option>
+            <option>White base</option>
+            <option>Ruby Red base</option>
+            <option>N/A — Swirl or Smart Lamp</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message / Special Requests</label><textarea placeholder="Custom requests, questions, or bulk order inquiries..." id="msg"></textarea></div>
+        <button class="submit-btn" id="submitBtn" onclick="submitForm()">Send Inquiry</button>
+        <div class="success-msg" id="successMsg">
+          ✅ Inquiry sent! We'll be in touch within 24 hours.
+          <div style="margin-top:1rem;">
+            <a id="waBtn" href="#" target="_blank" style="
+              display:inline-flex; align-items:center; gap:0.6rem;
+              background:#25D366; color:#fff; text-decoration:none;
+              padding:0.75rem 1.5rem; border-radius:999px;
+              font-size:0.85rem; font-weight:700; letter-spacing:0.05em;
+              transition: background 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Also message us on WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-logo">Marvelous Inventions</div>
+  <div class="footer-sub">Let's Build It!</div>
+  <ul class="footer-links">
+    <li><a href="#gallery">Collection</a></li>
+    <li><a href="#details">Details</a></li>
+    <li><a href="#order">Order</a></li>
+  </ul>
+  <div class="footer-email">Questions? <a href="mailto:marvelousinventions@outlook.com">marvelousinventions@outlook.com</a></div>
+  <div class="copyright">© 2026 Marvelous Inventions. All rights reserved.</div>
+</footer>
+
+<script>
+  // ---- SIZE SELECTOR ----
+  const sizes = {
+    small:  { price: '$38',  shade: '140mm dia · 155mm tall · 125g',  base: '100mm dia · 140mm tall · 125g' },
+    medium: { price: '$75',  shade: '196mm dia · 217mm tall · ~343g', base: '140mm dia · 196mm tall · ~343g' },
+    large:  { price: '$120', shade: '224mm dia · 248mm tall · ~613g', base: '170mm dia · 238mm tall · ~613g' },
+  };
+  function selectSize(size, btn) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('memory-price').textContent = sizes[size].price;
+    document.getElementById('spec-shade').textContent = 'Shade: ' + sizes[size].shade;
+    document.getElementById('spec-base').textContent  = 'Base: ' + sizes[size].base;
+  }
+
+  // ---- COLOUR SWITCHER ----
+  function switchColor(lampId, imgFile, label, swatchEl) {
+    const img = document.getElementById(lampId + '-img');
+    const fallback = document.getElementById(lampId + '-fallback');
+    const colorTag = document.getElementById(lampId + '-colorname');
+    const swatchLabel = document.getElementById(lampId + '-swatchlabel');
+    img.classList.remove('visible');
+    img.src = imgFile;
+    img.onload = () => { if(fallback) fallback.classList.add('hidden'); img.classList.add('visible'); };
+    img.onerror = () => { img.classList.remove('visible'); if(fallback) fallback.classList.remove('hidden'); };
+    if (colorTag) colorTag.textContent = label;
+    if (swatchLabel) swatchLabel.textContent = label;
+    swatchEl.closest('.swatch-row').querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    swatchEl.classList.add('active');
+  }
+
+  // ---- SLIDESHOW ----
+  const slideshows = {};
+
+  function initSlideshow(id) {
+    const el = document.getElementById(id + '-slideshow');
+    if (!el) return;
+    const allSlides = Array.from(el.querySelectorAll('img.slide'));
+    const slides = allSlides.filter(s => s.style.display !== 'none');
+    if (slides.length === 0) return;
+    const fb = document.getElementById(id + '-fallback');
+    if (fb) fb.style.display = 'none';
+    slideshows[id] = { slides, current: 0 };
+    const dotsEl = document.getElementById(id + '-dots');
+    if (dotsEl) {
+      dotsEl.innerHTML = '';
+      slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'slide-dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => goToSlide(id, i);
+        dotsEl.appendChild(d);
+      });
+    }
+    updateCounter(id);
+  }
+
+  function moveSlide(id, dir) {
+    const s = slideshows[id];
+    if (!s) return;
+    goToSlide(id, (s.current + dir + s.slides.length) % s.slides.length);
+  }
+
+  function goToSlide(id, idx) {
+    const s = slideshows[id];
+    if (!s) return;
+    s.slides[s.current].classList.remove('active');
+    const dots = document.querySelectorAll('#' + id + '-dots .slide-dot');
+    if (dots[s.current]) dots[s.current].classList.remove('active');
+    s.current = idx;
+    s.slides[s.current].classList.add('active');
+    if (dots[s.current]) dots[s.current].classList.add('active');
+    updateCounter(id);
+  }
+
+  function updateCounter(id) {
+    const s = slideshows[id];
+    if (!s) return;
+    const c = document.getElementById(id + '-counter');
+    if (c) c.textContent = (s.current + 1) + ' / ' + s.slides.length;
+  }
+
+  // ✅ Both slideshows initialised here
+  window.addEventListener('load', () => {
+    initSlideshow('swirl');
+    initSlideshow('smart'); // <-- this was the missing line
+  });
+
+  // ---- FORM ----
+  async function submitForm() {
+    const fname     = document.getElementById('fname').value.trim();
+    const lname     = document.getElementById('lname').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const lamp      = document.getElementById('lamp').value;
+    const color     = document.getElementById('color').value;
+    const msg       = document.getElementById('msg').value.trim();
+
+    if (!fname || !email || !lamp) {
+      alert('Please fill in your name, email, and lamp selection.');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    // --- Formspree submission ---
+    try {
+      const res = await fetch('https://formspree.io/f/xdapynoq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name: fname + ' ' + lname, email, lamp, color, message: msg })
+      });
+      if (!res.ok) throw new Error('Formspree error');
+    } catch(e) {
+      // Still show success + WhatsApp even if Formspree isn't set up yet
+    }
+
+    // --- Build WhatsApp message ---
+    const wa = `Hi Marvelous Inventions! 👋
+
+I'd like to place an inquiry:
+• Name: ${fname} ${lname}
+• Email: ${email}
+• Lamp: ${lamp}
+${color ? '• Colour: ' + color : ''}
+${msg ? '• Message: ' + msg : ''}`;
+
+    const waUrl = 'https://wa.me/263775512924?text=' + encodeURIComponent(wa);
+    document.getElementById('waBtn').href = waUrl;
+
+    // Show success
+    btn.style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  }
+</script>
+</body>
+</html>
