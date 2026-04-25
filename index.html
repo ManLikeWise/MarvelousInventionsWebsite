@@ -125,6 +125,21 @@
   .combo-part-name { font-size: 0.75rem; font-weight: 700; color: var(--black); }
   .combo-divider { font-size: 1.2rem; color: var(--border); }
 
+  /* STRIPED SWIRL SHADE SWITCHER */
+  .shade-options { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .shade-btn {
+    flex: 1; min-width: 120px; padding: 0.7rem 0.8rem;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--white); cursor: pointer; text-align: center;
+    transition: all 0.2s; font-family: inherit; display: flex;
+    align-items: center; gap: 0.6rem;
+  }
+  .shade-btn:hover { border-color: var(--black); }
+  .shade-btn.active { border-color: var(--black); background: var(--black); color: var(--white); }
+  .shade-btn .shade-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid rgba(0,0,0,0.1); }
+  .shade-btn .shade-name { font-size: 0.82rem; font-weight: 700; }
+  .shade-btn.active .shade-name { color: var(--white); }
+
   #order { background: var(--white); }
   .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
   .order-intro h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.1; }
@@ -198,7 +213,7 @@
   <div class="container">
     <div class="centered">
       <span class="section-label">Our Collection</span>
-      <h2 class="section-title">Three <span class="thin">Distinct</span> Designs</h2>
+      <h2 class="section-title">Four <span class="thin">Distinct</span> Designs</h2>
       <p class="section-sub">Each lamp is printed on demand in your choice of colour and finish.</p>
     </div>
     <div class="lamp-grid">
@@ -227,6 +242,16 @@
           <div class="lamp-name">Smart Lamp</div>
           <div class="lamp-desc">WiFi-connected RGB lamp with a glow-in-the-dark translucent shade.</div>
           <div class="lamp-price">From $35</div>
+        </div>
+      </div>
+      <!-- STRIPED SWIRL CARD -->
+      <div class="lamp-card has-img" onclick="document.getElementById('stripedswirl').scrollIntoView({behavior:'smooth'})">
+        <img class="card-bg-img" src="StripedSwirlDefault.png" alt="Striped Swirl Lamp">
+        <div class="lamp-info">
+          <span class="lamp-badge">New</span>
+          <div class="lamp-name">Striped Swirl Lamp</div>
+          <div class="lamp-desc">Bold candy stripes meet a spiraling silhouette — available in Lemon or Tangerine.</div>
+          <div class="lamp-price">From $30</div>
         </div>
       </div>
     </div>
@@ -385,6 +410,62 @@
       </div>
     </div>
 
+    <!-- STRIPED SWIRL LAMP -->
+    <div class="lamp-detail reverse" id="stripedswirl">
+      <div class="detail-visual" id="stripedswirl-visual">
+        <div class="slideshow" id="stripedswirl-slideshow">
+          <div class="slide-fallback" id="stripedswirl-fallback">🌈</div>
+          <img class="slide active" id="stripedswirl-img1" src="stripedswirl-lemon-1.png" alt="Striped Swirl Lemon view 1" onerror="this.style.display='none'">
+          <img class="slide" id="stripedswirl-img2" src="stripedswirl-lemon-2.png" alt="Striped Swirl Lemon view 2" onerror="this.style.display='none'">
+          <img class="slide" id="stripedswirl-img3" src="stripedswirl-lemon-3.png" alt="Striped Swirl Lemon view 3" onerror="this.style.display='none'">
+          <button class="slide-arrow prev" onclick="moveSlide('stripedswirl', -1)">&#8592;</button>
+          <button class="slide-arrow next" onclick="moveSlide('stripedswirl', 1)">&#8594;</button>
+          <div class="slide-dots" id="stripedswirl-dots"></div>
+          <div class="slide-counter" id="stripedswirl-counter"></div>
+        </div>
+        <span class="color-name-tag" id="stripedswirl-colorname">Lemon shade · Black base</span>
+      </div>
+      <div class="detail-text">
+        <span class="badge">New</span>
+        <h3>Striped Swirl Lamp</h3>
+        <span class="price-tag">From $30</span>
+        <p>The same beloved swirl silhouette, now dressed in bold candy stripes. Choose between a sunny Lemon or vibrant Tangerine lampshade — both paired with a sleek black base.</p>
+        <ul class="feature-list">
+          <li>Dual-colour striped PLA filament shade</li>
+          <li>B22 socket</li>
+          <li>25cm x 18cm</li>
+          <li>Ships in 10–14 business days</li>
+        </ul>
+        <div class="colour-section">
+          <div class="colour-section-title">Choose your shade colour</div>
+          <div class="shade-options">
+            <button class="shade-btn active" onclick="switchStripedShade('lemon', this)">
+              <div class="shade-dot" style="background:linear-gradient(135deg,#f7e96b,#e8d44d);"></div>
+              <span class="shade-name">Lemon</span>
+            </button>
+            <button class="shade-btn" onclick="switchStripedShade('tangerine', this)">
+              <div class="shade-dot" style="background:linear-gradient(135deg,#ff8c42,#e8620a);"></div>
+              <span class="shade-name">Tangerine</span>
+            </button>
+          </div>
+          <div class="combo-display" style="margin-top:0.5rem;">
+            <div class="combo-part">
+              <div class="combo-swatch" id="stripedswirl-shade-swatch" style="background:linear-gradient(135deg,#f7e96b,#e8d44d);"></div>
+              <div class="combo-part-label">Shade</div>
+              <div class="combo-part-name" id="stripedswirl-shade-name">Lemon</div>
+            </div>
+            <div class="combo-divider">+</div>
+            <div class="combo-part">
+              <div class="combo-swatch" style="background:#1a1a1a;"></div>
+              <div class="combo-part-label">Base</div>
+              <div class="combo-part-name">Black</div>
+            </div>
+          </div>
+        </div>
+        <a href="#order" class="btn btn-dark">Order Striped Swirl</a>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -416,6 +497,8 @@
             <option>Memory Lamp — Large ($120)</option>
             <option>Swirl Table Lamp ($30)</option>
             <option>Smart Lamp ($35)</option>
+            <option>Striped Swirl Lamp — Lemon ($30)</option>
+            <option>Striped Swirl Lamp — Tangerine ($30)</option>
             <option>Multiple / Custom inquiry</option>
           </select>
         </div>
@@ -426,7 +509,7 @@
             <option>Gray base</option>
             <option>White base</option>
             <option>Ruby Red base</option>
-            <option>N/A — Swirl or Smart Lamp</option>
+            <option>N/A — Swirl, Striped Swirl or Smart Lamp</option>
           </select>
         </div>
         <div class="form-group"><label>Message / Special Requests</label><textarea placeholder="Custom requests, questions, or bulk order inquiries..." id="msg"></textarea></div>
@@ -495,6 +578,34 @@
     swatchEl.classList.add('active');
   }
 
+  // ---- STRIPED SWIRL SHADE SWITCHER ----
+  const stripedShades = {
+    lemon:     { label: 'Lemon shade · Black base', swatch: 'linear-gradient(135deg,#f7e96b,#e8d44d)', name: 'Lemon',     imgs: ['stripedswirl-lemon-1.png','stripedswirl-lemon-2.png','stripedswirl-lemon-3.png'] },
+    tangerine: { label: 'Tangerine shade · Black base', swatch: 'linear-gradient(135deg,#ff8c42,#e8620a)', name: 'Tangerine', imgs: ['stripedswirl-tangerine-1.png','stripedswirl-tangerine-2.png','stripedswirl-tangerine-3.png'] },
+  };
+  function switchStripedShade(shade, btn) {
+    const data = stripedShades[shade];
+    // Update shade switcher buttons
+    document.querySelectorAll('.shade-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Update combo display
+    document.getElementById('stripedswirl-shade-swatch').style.background = data.swatch;
+    document.getElementById('stripedswirl-shade-name').textContent = data.name;
+    document.getElementById('stripedswirl-colorname').textContent = data.label;
+    // Swap slideshow images and reinit
+    const ss = document.getElementById('stripedswirl-slideshow');
+    const imgs = ss.querySelectorAll('img.slide');
+    imgs.forEach((img, i) => {
+      img.style.display = '';
+      img.src = data.imgs[i] || '';
+      img.classList.remove('active');
+    });
+    imgs[0].classList.add('active');
+    delete slideshows['stripedswirl'];
+    // Small delay to allow images to begin loading
+    setTimeout(() => initSlideshow('stripedswirl'), 100);
+  }
+
   // ---- SLIDESHOW ----
   const slideshows = {};
 
@@ -545,20 +656,20 @@
     if (c) c.textContent = (s.current + 1) + ' / ' + s.slides.length;
   }
 
-  // ✅ Both slideshows initialised here
   window.addEventListener('load', () => {
     initSlideshow('swirl');
-    initSlideshow('smart'); // <-- this was the missing line
+    initSlideshow('smart');
+    initSlideshow('stripedswirl');
   });
 
   // ---- FORM ----
   async function submitForm() {
-    const fname     = document.getElementById('fname').value.trim();
-    const lname     = document.getElementById('lname').value.trim();
-    const email     = document.getElementById('email').value.trim();
-    const lamp      = document.getElementById('lamp').value;
-    const color     = document.getElementById('color').value;
-    const msg       = document.getElementById('msg').value.trim();
+    const fname = document.getElementById('fname').value.trim();
+    const lname = document.getElementById('lname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const lamp  = document.getElementById('lamp').value;
+    const color = document.getElementById('color').value;
+    const msg   = document.getElementById('msg').value.trim();
 
     if (!fname || !email || !lamp) {
       alert('Please fill in your name, email, and lamp selection.');
@@ -569,7 +680,6 @@
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    // --- Formspree submission ---
     try {
       const res = await fetch('https://formspree.io/f/xdapynoq', {
         method: 'POST',
@@ -577,11 +687,8 @@
         body: JSON.stringify({ name: fname + ' ' + lname, email, lamp, color, message: msg })
       });
       if (!res.ok) throw new Error('Formspree error');
-    } catch(e) {
-      // Still show success + WhatsApp even if Formspree isn't set up yet
-    }
+    } catch(e) {}
 
-    // --- Build WhatsApp message ---
     const wa = `Hi Marvelous Inventions! 👋
 
 I'd like to place an inquiry:
@@ -591,10 +698,7 @@ I'd like to place an inquiry:
 ${color ? '• Colour: ' + color : ''}
 ${msg ? '• Message: ' + msg : ''}`;
 
-    const waUrl = 'https://wa.me/263775512924?text=' + encodeURIComponent(wa);
-    document.getElementById('waBtn').href = waUrl;
-
-    // Show success
+    document.getElementById('waBtn').href = 'https://wa.me/263775512924?text=' + encodeURIComponent(wa);
     btn.style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
   }
